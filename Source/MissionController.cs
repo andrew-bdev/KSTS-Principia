@@ -170,6 +170,7 @@ namespace KSTS
 
                             break;
                         case CrewTransferOrder.CrewTransferDirection.COLLECT:
+
                             if (mission.crewToCollect == null)
                             {
                                 mission.crewToCollect = new List<string>();
@@ -177,7 +178,7 @@ namespace KSTS
 
                             mission.crewToCollect.Add(crewTransfer.kerbalName);
 
-                            mission.crewToDeliver.Add(crewTransfer.kerbalName);
+                            //mission.crewToDeliver.Add(crewTransfer.kerbalName);
 
                             if (transport == "")
                                 transport = crewTransfer.kerbalName;
