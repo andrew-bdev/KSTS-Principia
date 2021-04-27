@@ -1,5 +1,8 @@
 ChangeLog
 
+2.0.1.9
+	Fix download link in .version file
+
 2.0.1.8
 	Fixed nullref when starting a crew collection mission
 
