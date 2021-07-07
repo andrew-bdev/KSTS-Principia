@@ -17,7 +17,6 @@ namespace KSTS
     public enum MissionType { DEPLOY = 1, TRANSPORT = 2, CONSTRUCT = 3 };
     public class Mission : Saveable
     {
-
         public MissionType missionType;
         public Orbit orbit = null;      // The orbit in which the new vesselo should get launched
         public string shipName = "";    // Name of the new vessel
@@ -101,8 +100,10 @@ namespace KSTS
                 flagURL = flagURL,
 
             };
-            if (KACWrapper.APIReady)
+            Log.Info("CreateDeployment, current time: " + Planetarium.GetUniversalTime().ToString("F0") + ", eta: " + mission.eta.ToString("F0"));
+           if (KACWrapper.APIReady && MissionController.useKACifAvailable)
             {
+                Log.Info("Setting KAC Alarm");
                 var KACalarmID = KACWrapper.KAC.CreateAlarm(
                                 KACWrapper.KACAPI.AlarmTypeEnum.Raw,
                                 "Deployment: " + shipName,
@@ -116,6 +117,22 @@ namespace KSTS
                     //a.VesselID = FlightGlobals.ActiveVessel.id.ToString();
                     a.Notes = "Vessel deployment of " + shipName + " by Kerbal Space Transport System";
                 }
+            }
+            if (MissionController.useStockAlarmClock)
+            {
+                Log.Info("Setting stock alarm");
+                AlarmTypeRaw alarmToSet = new AlarmTypeRaw
+                {
+                    title = "KSTS Vessel Deployment",
+                    description = "Vessel deployment of " + shipName + " by Kerbal Space Transport System",
+                    actions =
+                            {
+                                warp = AlarmActions.WarpEnum.KillWarp,
+                                message = AlarmActions.MessageEnum.Yes
+                            },
+                    ut = mission.eta
+                };
+                AlarmClockScenario.AddAlarm(alarmToSet);
             }
             // The filename contains silly portions like "KSP_x64_Data/..//saves", which break savegames because "//" starts a comment in the savegame ...
             // The crew we want the new vessel to start with.
@@ -192,7 +209,7 @@ namespace KSTS
                 }
             }
 
-            if (KACWrapper.APIReady)
+            if (KACWrapper.APIReady && MissionController.useKACifAvailable)
             {
                 var KACalarmID = KACWrapper.KAC.CreateAlarm(
                                 KACWrapper.KACAPI.AlarmTypeEnum.Raw,
@@ -207,6 +224,21 @@ namespace KSTS
                     //a.VesselID = FlightGlobals.ActiveVessel.id.ToString();
                     a.Notes = "Transport " + transport +" to " + target.protoVessel.GetDisplayName() + " by Kerbal Space Transport System";
                 }
+            }
+            if (MissionController.useStockAlarmClock)
+            {
+                AlarmTypeRaw alarmToSet = new AlarmTypeRaw
+                {
+                    title = "KSTS Transport",
+                    description = "Transport " + transport + " to " + target.protoVessel.GetDisplayName() + " by Kerbal Space Transport System",
+                    actions =
+                            {
+                                warp = AlarmActions.WarpEnum.KillWarp,
+                                message = AlarmActions.MessageEnum.Yes
+                            },
+                    ut = mission.eta
+                };
+                AlarmClockScenario.AddAlarm(alarmToSet);
             }
 
             return mission;
@@ -227,7 +259,7 @@ namespace KSTS
             };
             // The crew we want the new vessel to start with.
 
-            if (KACWrapper.APIReady)
+            if (KACWrapper.APIReady && MissionController.useKACifAvailable)
             {
                 var KACalarmID = KACWrapper.KAC.CreateAlarm(
                                 KACWrapper.KACAPI.AlarmTypeEnum.Raw,
@@ -242,6 +274,21 @@ namespace KSTS
                     //a.VesselID = FlightGlobals.ActiveVessel.id.ToString();
                     a.Notes = "Construction of " + shipName + " by Kerbal Space Transport System";
                 }
+            }
+            if (MissionController.useStockAlarmClock)
+            {
+                AlarmTypeRaw alarmToSet = new AlarmTypeRaw
+                {
+                    title = "KSTS Construction",
+                    description = "Construction of " + shipName + " by Kerbal Space Transport System",
+                    actions =
+                            {
+                                warp = AlarmActions.WarpEnum.KillWarp,
+                                message = AlarmActions.MessageEnum.Yes
+                            },
+                    ut = mission.eta
+                };
+                AlarmClockScenario.AddAlarm(alarmToSet);
             }
 
             return mission;
@@ -659,6 +706,10 @@ namespace KSTS
     {
         public static Dictionary<string, MissionProfile> missionProfiles = null;
         public static List<Mission> missions = null;
+
+        public static bool useKACifAvailable = true;
+        public static bool useStockAlarmClock = true;
+
 
         public static void Initialize()
         {

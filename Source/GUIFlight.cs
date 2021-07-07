@@ -19,7 +19,7 @@ namespace KSTS
         {
             if (GUI.showGui)
             {
-                GUI.windowPosition = ClickThruBlocker.GUILayoutWindow(winId, GUI.windowPosition, OnWindow, "", GUI.windowStyle);
+                GUI.windowPosition = ClickThruBlocker.GUILayoutWindow(winId, GUI.windowPosition, OnWindow, ""); //, GUI.windowStyle);
             }
         }
 

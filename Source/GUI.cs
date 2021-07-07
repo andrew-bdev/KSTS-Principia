@@ -20,10 +20,11 @@ namespace KSTS
     [KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
     public class GUI : UnityEngine.MonoBehaviour
     {
-        const int WIDTH = 450;
+        public const int WIDTH = 450;
+        public const int WIDTH_SPACECENTER = WIDTH + (WIDTH / 6 - 6);
 
         public static Rect windowPosition = new Rect(300, 60, WIDTH, 400);
-        public static GUIStyle windowStyle;
+        //public static GUIStyle windowStyle;
         public static bool showGui = false;
 
         // Styles (initialized in OnReady):
@@ -50,11 +51,11 @@ namespace KSTS
 
         void Awake()
         {
+#if false
             if (windowStyle == null)
             {
                 windowStyle = new GUIStyle(HighLogic.Skin.window) { fixedWidth = 450f, fixedHeight = 500f };
             }
-#if false
             if (buttonIcon == null)
             {
                 buttonIcon = new Texture2D(36, 36, TextureFormat.RGBA32, false);
@@ -130,6 +131,14 @@ namespace KSTS
         {
             Log.Warning("KSTS: GuiOn");
             showGui = true;
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                         windowPosition = new Rect(windowPosition.x, windowPosition.y, WIDTH_SPACECENTER, 400);
+            }
+            else
+            {
+                windowPosition = new Rect(windowPosition.x, windowPosition.y, WIDTH, 400);
+            }
             GUI.UpdateShipTemplateCache();
         }
 
@@ -288,7 +297,7 @@ namespace KSTS
         }
 
         // Moved here to avoid reinitializing every single loop
-        static string[] toolbarStrings = new string[] { "Flights", "Deploy", "Transport", "Construct", "Record", "Help" };
+        static string[] toolbarStrings = new string[] { "Flights", "Deploy", "Transport", "Construct", "Record", "Help", "Settings" };
 
         // Is called by our helper-classes to draw the actual window:
         public static void DrawWindow()
@@ -299,8 +308,9 @@ namespace KSTS
                 GUILayout.BeginVertical();
 
                 // Title:
-                GUILayout.BeginArea(new Rect(0, 3, windowStyle.fixedWidth, 20));
-                GUILayout.Label("<size=14><b>Kerbal Space Transport System</b></size>", new GUIStyle(GUI.labelStyle) { fixedWidth = windowStyle.fixedWidth, alignment = TextAnchor.MiddleCenter });
+
+                GUILayout.BeginArea(new Rect(0, 3,windowPosition.width /* windowStyle.fixedWidth */, 20));
+                GUILayout.Label("<size=14><b>Kerbal Space Transport System</b></size>", new GUIStyle(GUI.labelStyle) { fixedWidth = windowPosition.width /*  windowStyle.fixedWidth */, alignment = TextAnchor.MiddleCenter });
                 GUILayout.EndArea();
 
                 // Tab-Switcher:
@@ -316,6 +326,11 @@ namespace KSTS
                         selectedMainTab = 4;
                     if (GUILayout.Button(toolbarStrings[5], GUILayout.Width(x)))
                         selectedMainTab = 5;
+                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+                    {
+                        if (GUILayout.Button(toolbarStrings[6], GUILayout.Width(x)))
+                            selectedMainTab = 6;
+                    }
                     GUILayout.EndHorizontal();
                 }
                 else
@@ -371,6 +386,18 @@ namespace KSTS
                         helpTabScrollPos = GUILayout.BeginScrollView(helpTabScrollPos, GUI.scrollStyle);
                         GUILayout.Label(helpText);
                         GUILayout.EndScrollView();
+                        break;
+
+                    case 6:                        
+                       
+                        GUILayout.Label("<size=14><b>Alarm Clock Settings:</b></size>");
+                        GUILayout.BeginScrollView(new Vector2(0,0), GUI.scrollStyle);
+
+                        MissionController.useKACifAvailable = GUILayout.Toggle(MissionController.useKACifAvailable, "Use Kerbal Alarm Clock (if available)");
+                        MissionController.useStockAlarmClock = GUILayout.Toggle(MissionController.useStockAlarmClock, "Use Stock Alarm Clock");
+
+                        GUILayout.EndScrollView();
+
                         break;
 
                     default:

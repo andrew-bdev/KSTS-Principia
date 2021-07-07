@@ -9,8 +9,6 @@ rem    but not always
 
 set H=%KSPDIR%
 
-set H=R:\KSP_1.11.2_KSTSdebug
-
 set GAMEDIR=KSTS
 set GAMEDATA="GameData"
 set VERSIONFILE=%GAMEDIR%.version

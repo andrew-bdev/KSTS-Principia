@@ -1,5 +1,9 @@
 ChangeLog
 
+2.0.2
+	Added settings for alarm clocks
+	Added support for stock alarm clock in 1.12
+
 2.0.1.9
 	Fix download link in .version file
 

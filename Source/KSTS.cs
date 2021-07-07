@@ -290,6 +290,8 @@ namespace KSTS
 
                 FlightRecorder.SaveRecordings(node);
                 MissionController.SaveMissions(node);
+                node.AddValue("useKACifAvailable", MissionController.useKACifAvailable);
+                node.AddValue("useStockAlarmClock", MissionController.useStockAlarmClock);
             }
             catch (Exception e)
             {
@@ -304,6 +306,12 @@ namespace KSTS
             {
                 FlightRecorder.LoadRecordings(node);
                 MissionController.LoadMissions(node);
+
+                if (node.HasValue("useKACifAvailable"))
+                    MissionController.useKACifAvailable = bool.Parse(node.GetValue("useKACifAvailable"));
+                if (node.HasValue("useStockAlarmClock"))
+                    MissionController.useStockAlarmClock = bool.Parse(node.GetValue("useStockAlarmClock"));
+
                 GUI.Reset();
             }
             catch (Exception e)
