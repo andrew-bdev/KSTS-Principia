@@ -224,7 +224,7 @@ namespace KSTS
 
         static void ReadAllCraftFiles(string editorFacility, string shipDirectory)
         {
-            foreach (var craftFile in Directory.GetFiles(shipDirectory, "*.craft"))
+            foreach (var craftFile in Directory.GetFiles(shipDirectory, "*.craft", SearchOption.AllDirectories))
             {
                 try
                 {
@@ -243,8 +243,15 @@ namespace KSTS
                     if (cachedTemplate.template == null) continue;
                     if (cachedTemplate.template.shipPartsExperimental || !cachedTemplate.template.shipPartsUnlocked) continue; // We won't bother with ships we can't use anyways.
 
+                    var subdirectories = craftFile
+                        .Replace(shipDirectory, string.Empty)
+                        .Replace(Path.GetFileName(craftFile), string.Empty)
+                        .Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+
+                    var subdirectoryPart = subdirectories.Length > 0 ? string.Join("_", subdirectories) + "_" : string.Empty;
+
                     // Try to load the thumbnail for this craft:
-                    var thumbFile = KSPUtil.ApplicationRootPath + "thumbs/" + HighLogic.SaveFolder + "_" + editorFacility + "_" + validFileName + ".png";
+                    var thumbFile = KSPUtil.ApplicationRootPath + "thumbs/" + HighLogic.SaveFolder + "_" + editorFacility + "_" + subdirectoryPart + validFileName + ".png";
 
                     Texture2D thumbnail;
 
