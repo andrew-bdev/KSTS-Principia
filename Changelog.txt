@@ -1,5 +1,9 @@
 ChangeLog
 
+2.0.2.1
+	Thanks to github user @adamkarancsi for this:
+		added craft loading from subdirectories
+
 2.0.2
 	Added settings for alarm clocks
 	Added support for stock alarm clock in 1.12
