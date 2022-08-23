@@ -704,7 +704,7 @@ namespace KSTS
 
     class MissionController
     {
-        public static Dictionary<string, MissionProfile> missionProfiles = null;
+        public static SortedList<string, MissionProfile> missionProfiles = null;
         public static List<Mission> missions = null;
 
         public static bool useKACifAvailable = true;
@@ -716,7 +716,7 @@ namespace KSTS
             if (MissionController.missionProfiles == null)
             {
                 Log.Warning("MissionController.Initialize");
-                MissionController.missionProfiles = new Dictionary<string, MissionProfile>();
+                MissionController.missionProfiles = new SortedList<string, MissionProfile>();
             }
 
             if (MissionController.missions == null)

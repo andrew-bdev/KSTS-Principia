@@ -26,10 +26,14 @@ namespace KSTS
         // Makes sure that the cached settings are still valid (eg if the player has deleted the selected profile):
         private void CheckInternals()
         {
-            if (!MissionController.missionProfiles.Values.Contains(selectedProfile) || selectedIndex < 0 || selectedIndex >= MissionController.missionProfiles.Count)
+            // Recalculate the index because it might have changed (due to renaming)
+            selectedIndex = MissionController.missionProfiles.IndexOfValue(selectedProfile);
+
+            // IndexOfValue Returns -1 if the profile is null or not in the list
+            // invalidate the cached profile if this is the case
+            if (selectedIndex == -1)
             {
                 selectedProfile = null;
-                selectedIndex = -1;
             }
         }
 
@@ -186,7 +190,7 @@ namespace KSTS
                 if (newSelection != selectedIndex && !invalidIndices.Contains(newSelection))
                 {
                     selectedIndex = newSelection;
-                    selectedProfile = MissionController.missionProfiles.Values.ToList()[selectedIndex];
+                    selectedProfile = MissionController.missionProfiles.Values[selectedIndex];
                 }
             }
 
