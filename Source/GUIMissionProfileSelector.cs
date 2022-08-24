@@ -12,7 +12,8 @@ namespace KSTS
         public const string SELECTED_DETAILS_PAYLOAD = "payload";
 
         private Vector2 scrollPos = Vector2.zero;
-        private int selectedIndex = -1;
+        private string nameSearch = "";
+        private bool hideInvalid = true;
         public MissionProfile selectedProfile = null;
 
         public double? filterMass = null;
@@ -26,15 +27,22 @@ namespace KSTS
         // Makes sure that the cached settings are still valid (eg if the player has deleted the selected profile):
         private void CheckInternals()
         {
-            // Recalculate the index because it might have changed (due to renaming)
-            selectedIndex = MissionController.missionProfiles.IndexOfValue(selectedProfile);
-
-            // IndexOfValue Returns -1 if the profile is null or not in the list
-            // invalidate the cached profile if this is the case
-            if (selectedIndex == -1)
+            if (!MissionController.missionProfiles.ContainsValue(selectedProfile))
             {
                 selectedProfile = null;
             }
+        }
+
+        // Whether this selector has any filters on valid profiles
+        private bool HasFilter()
+        {
+            return filterMass != null
+                || filterAltitude != null
+                || filterCrewCapacity != null
+                || filterRoundTrip != null
+                || filterDockingPortTypes != null
+                || filterBody != null
+                || filterMissionType != null;
         }
 
         // Displays the currently selected mission-profile and returns true, if the player has deselected the profile:
@@ -51,7 +59,6 @@ namespace KSTS
             if (GUILayout.Button("<size=14><color=#F9FA86><b>" + this.selectedProfile.profileName + "</b></color> ("+details+")</size>", new GUIStyle(GUI.buttonStyle) { alignment = TextAnchor.MiddleRight, stretchWidth = false, fixedWidth = 320 }))
             {
                 this.selectedProfile = null; // Back to the previous selection
-                this.selectedIndex = -1;
             }
             GUILayout.EndHorizontal();
             return this.selectedProfile == null;
@@ -61,7 +68,23 @@ namespace KSTS
         public bool DisplayList()
         {
             CheckInternals();
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("<size=14><b>Mission Profile:</b></size>");
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Filter:");
+            nameSearch = GUILayout.TextField(nameSearch, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+
+            // Only show the "Hide Invalid" checkbox if there are actually filters that make profiles invalid
+            if (this.HasFilter())
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                hideInvalid = GUILayout.Toggle(hideInvalid, "Hide Invalid");
+                GUILayout.EndHorizontal();
+            }
+
             scrollPos = GUILayout.BeginScrollView(scrollPos, GUI.scrollStyle);
             var green = "#00FF00";
             var red = "#FF0000";
@@ -74,9 +97,26 @@ namespace KSTS
             else
             {
                 var contents = new List<GUIContent>();
-                var invalidIndices = new List<int>(); // Profiles which fall out of the defined filters will get noted here.
+                var displayedProfiles = new List<MissionProfile>(); // The list of profiles which are actually displayed
+                var invalidIndices = new List<int>(); // Profiles which are not valid for the defined filters will get noted here.
+
+                // Filter out the profiles that should be hidden
+                // TODO - this can be cached so we don't have to search the list every frame
+                IEnumerable<MissionProfile> profiles = MissionController.missionProfiles.Values;
+                if (this.filterMissionType != null)
+                {
+                    // Always hide profiles that are not for the correct mission type, since there's no point in showing them
+                    profiles = profiles.Where(prof => prof.missionType == this.filterMissionType);
+                }
+                if (this.nameSearch != "")
+                {
+                    // Filter out profiles that don't match the name filter
+                    string f = nameSearch.ToLower();
+                    profiles = profiles.Where(prof => prof.vesselName.ToLower().Contains(f) || prof.profileName.ToLower().Contains(f));
+                }
+
                 var index = 0;
-                foreach (var missionProfile in MissionController.missionProfiles.Values)
+                foreach (var missionProfile in profiles)
                 {
                     var isValidProfile = true;
                     var color = "";
@@ -180,17 +220,24 @@ namespace KSTS
                     description += "<b>Crew-Capacity:</b> " + crewCapacity;
 
                     description += "</color>";
-                    contents.Add(new GUIContent(description, GUI.GetVesselThumbnail(missionProfile.vesselName)));
 
-                    if (!isValidProfile) invalidIndices.Add(index);
-                    index++;
+                    // Don't render invalid profiles if the "Hide Invalid" box is checked
+                    // Has to be done down here to avoid duplicating any logic
+                    if (isValidProfile || !hideInvalid)
+                    {
+                        displayedProfiles.Add(missionProfile);
+                        contents.Add(new GUIContent(description, GUI.GetVesselThumbnail(missionProfile.vesselName)));
+
+                        if (!isValidProfile) invalidIndices.Add(index);
+                        index++;
+                    }
                 }
 
-                var newSelection = GUILayout.SelectionGrid(selectedIndex, contents.ToArray(), 1, GUI.selectionGridStyle);
-                if (newSelection != selectedIndex && !invalidIndices.Contains(newSelection))
+                var prevSelection = displayedProfiles.IndexOf(this.selectedProfile);
+                var newSelection = GUILayout.SelectionGrid(prevSelection, contents.ToArray(), 1, GUI.selectionGridStyle);
+                if (newSelection != prevSelection && !invalidIndices.Contains(newSelection))
                 {
-                    selectedIndex = newSelection;
-                    selectedProfile = MissionController.missionProfiles.Values[selectedIndex];
+                    selectedProfile = displayedProfiles[newSelection];
                 }
             }
 
