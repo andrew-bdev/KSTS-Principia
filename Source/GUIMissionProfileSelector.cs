@@ -123,7 +123,8 @@ namespace KSTS
 
                     // Build the descriptive text with highlighting:
                     var description = "<color=#F9FA86><b>" + missionProfile.profileName + "</b></color> <color=#FFFFFF>(" + missionProfile.vesselName + ")\n";
-                    description += "<b>Mass:</b> " + missionProfile.launchMass.ToString("0.0t") + ", <b>Cost:</b> <color=#B3D355>" + missionProfile.launchCost.ToString("#,##0√") + "</color>, ";
+                    description += "<b>Mass:</b> " + missionProfile.launchMass.ToString("0.0t") + ", <b>Cost:</b> <color=#B3D355>" + missionProfile.launchCost.ToString("#,##0√")
+                            + "</color> (<color=#B3D355>" + (missionProfile.launchCost / missionProfile.payloadMass).ToString("#,##0√") + "</color>/t), ";
 
                     // One-Way or Round-Trip:
                     var missionRouteDetails = "";
