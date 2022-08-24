@@ -72,7 +72,7 @@ namespace KSTS
             {
                 var ship = GUI.shipTemplates[i];
             
-                if (filter == "" || ship.template.shipName.Contains(filter))
+                if (filter == "" || ship.template.shipName.ToLower().Contains(filter.ToLower()))
                 {
                     bool b = false;
                     switch (ship.templateOrigin)
