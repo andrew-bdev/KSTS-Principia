@@ -101,7 +101,6 @@ namespace KSTS
                 var invalidIndices = new List<int>(); // Profiles which are not valid for the defined filters will get noted here.
 
                 // Filter out the profiles that should be hidden
-                // TODO - this can be cached so we don't have to search the list every frame
                 IEnumerable<MissionProfile> profiles = MissionController.missionProfiles.Values;
                 if (this.filterMissionType != null)
                 {
@@ -110,7 +109,7 @@ namespace KSTS
                 }
                 if (this.nameSearch != "")
                 {
-                    // Filter out profiles that don't match the name filter
+                    // Filter out profiles that don't match the search box
                     string f = nameSearch.ToLower();
                     profiles = profiles.Where(prof => prof.vesselName.ToLower().Contains(f) || prof.profileName.ToLower().Contains(f));
                 }
