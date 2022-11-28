@@ -1,5 +1,15 @@
 ChangeLog
 
+2.0.3
+	Thanks to github user @RadHazard for these changes
+		The list of mission profiles highlights the cost in green, and also shows cost per ton (useful for construction missions)
+		The mission profile list is now sorted by name (and updates when profiles are renamed)
+		Transport profiles are no longer shown when picking a mission profile for a Deploy mission, and vice-versa
+		Profiles of the right type but not valid for a mission (e.g. because the payload is too heavy) are hidden by default, but can be shown with a checkbox
+		The list of profiles can be searched by name (either profile name or craft name)
+		Both the payload search and profile search are now case-insensitive
+		Add cost per ton to the profile screen
+
 2.0.2.1
 	Thanks to github user @adamkarancsi for this:
 		added craft loading from subdirectories
