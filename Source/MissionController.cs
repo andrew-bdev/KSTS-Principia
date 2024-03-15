@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
-using KSP.UI.Screens.DebugToolbar.Screens.Cheats;
 using KSP.Localization;
+using KSP.UI.Screens;
 using static KSTS.Statics;
 using KSTS_KACWrapper;
 
@@ -546,6 +545,12 @@ namespace KSTS
                 AssembleForLaunchUnlanded(shipConstruct, crewToDeliver ?? Enumerable.Empty<string>(), duration, orbit, flagURL, game);
                 var newVessel = FlightGlobals.Vessels[FlightGlobals.Vessels.Count - 1];
                 newVessel.vesselName = shipName;
+                TrackedVessels.Add(newVessel.id);
+                if (!_addedEvent)
+                {
+                    GameEvents.onVesselLoaded.Add(CheckStaging);
+                    _addedEvent = true;
+                }
                 Log.Warning("deployed new ship '" + shipName + "' as '" + newVessel.protoVessel.vesselRef.id + "'");
                 ScreenMessages.PostScreenMessage("Vessel '" + shipName + "' deployed"); // Popup message to notify the player
 
@@ -556,6 +561,17 @@ namespace KSTS
             {
                 Debug.LogError("Mission.CreateShip(): " + e);
             }
+        }
+
+        private static readonly HashSet<Guid> TrackedVessels = new HashSet<Guid>();
+
+        private static bool _addedEvent;
+
+        public void CheckStaging(Vessel vessel)
+        {
+            if (!TrackedVessels.Contains(vessel.id)) return;
+            StageManager.BeginFlight();
+            TrackedVessels.Remove(vessel.id);
         }
 
         // Generates a description for displaying on the GUI:
