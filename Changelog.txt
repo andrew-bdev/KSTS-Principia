@@ -1,5 +1,8 @@
 ChangeLog
 
+2.0.3.1
+	Thanks to github user @TuckMeIntoBread for this:
+		 Fixes issue where staging fails to function correctly if a player deploys a vessel and exits the game before actually loading into that vessel
 2.0.3
 	Thanks to github user @RadHazard for these changes
 		The list of mission profiles highlights the cost in green, and also shows cost per ton (useful for construction missions)
