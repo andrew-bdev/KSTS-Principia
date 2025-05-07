@@ -128,7 +128,7 @@ namespace KSTS
             foreach (var protoPart in vessel.protoVessel.protoPartSnapshots)
             {
                 AvailablePart part;
-				if (!KSTS.partDictionary.TryGetValue(protoPartSnapshot.partName, out part)) continue;
+				if (!KSTS.partDictionary.TryGetValue(protoPart.partName, out part)) continue;
 				
                 int partCrewCapacity = part.partPrefab.CrewCapacity;
                 int moduleIdx = 0;

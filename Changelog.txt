@@ -1,5 +1,9 @@
 ChangeLog
 
+2.0.4
+	Thanks to github user @abel1502 for this:
+		Support inflatable modules from SSPXr and USI
+
 2.0.3.1
 	Thanks to github user @TuckMeIntoBread for this:
 		 Fixes issue where staging fails to function correctly if a player deploys a vessel and exits the game before actually loading into that vessel

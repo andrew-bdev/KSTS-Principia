@@ -1,6 +1,6 @@
 {
   "NAME": "KSTS",
-  "URL": "http://ksp.spacetux.net/avc/KSTS",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/KSTS/refs/heads/master/KSTS.version",
   "DOWNLOAD": "http://spacedock.info/mod/2303/KSTS",
   "GITHUB": {
     "USERNAME": "linuxgurugamer",
@@ -9,8 +9,8 @@
   "VERSION": {
     "MAJOR": 2,
     "MINOR": 0,
-    "PATCH": 3,
-    "BUILD": 1
+    "PATCH": 4,
+    "BUILD": 0
   },
   "KSP_VERSION": {
     "MAJOR": 1,
@@ -21,5 +21,10 @@
     "MAJOR": 1,
     "MINOR": 12,
     "PATCH": 0
+  },
+  "KSP_VERSION_MAX": {
+    "MAJOR": 1,
+    "MINOR": 12,
+    "PATCH": 99
   }
 }
