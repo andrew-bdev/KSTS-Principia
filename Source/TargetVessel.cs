@@ -127,8 +127,25 @@ namespace KSTS
             var capacity = 0;
             foreach (var protoPart in vessel.protoVessel.protoPartSnapshots)
             {
-                if (!KSTS.partDictionary.ContainsKey(protoPart.partName)) continue;
-                capacity += KSTS.partDictionary[protoPart.partName].partPrefab.CrewCapacity;
+                AvailablePart part;
+				if (!KSTS.partDictionary.TryGetValue(protoPartSnapshot.partName, out part)) continue;
+				
+                int partCrewCapacity = part.partPrefab.CrewCapacity;
+                int moduleIdx = 0;
+                foreach (ProtoPartModuleSnapshot module in protoPart.modules)
+                {
+                    if (module.moduleName == "USIAnimation" && module.moduleValues.GetValue("isDeployed") == "True")
+                    {
+                        partCrewCapacity = part.partPrefab.Modules.GetModule(moduleIdx).Fields.GetValue<int>("CrewCapacity");
+                    }
+                    if ((module.moduleName == "ModuleDeployableCentrifuge" || module.moduleName == "ModuleDeployableHabitat") && module.moduleValues.GetValue("Deployed") == "True")
+                    {
+                        partCrewCapacity = part.partPrefab.Modules.GetModule(moduleIdx).Fields.GetValue<int>("DeployedCrewCapacity");
+                    }
+                    moduleIdx++;
+                }
+                
+                capacity += partCrewCapacity;
             }
             return capacity;
         }
